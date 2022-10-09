@@ -28,8 +28,8 @@ router.get('/:postId', async (req, res) => {
                 userId:postId
             }
         })
-
         let data = []
+        
         for (let i=0; i<comment.length; i++) {
             data.push({
                 commentId: comment[i].id,
@@ -51,6 +51,7 @@ router.get('/:postId', async (req, res) => {
 router.put('/:commentId', async(req, res) => {
     const { commentId } = req.params;
     const { comment  } = req.body; 
+    
     try {
         Comments.update({ comment: comment }, {
             where: { id: commentId }
@@ -58,8 +59,6 @@ router.put('/:commentId', async(req, res) => {
         res.send({ message: '댓글을 수정하였습니다.'})
         console.log(Comments)
     }
-
-
     catch {
         res.status(400).send({errorMessage: '댓글 수정에 실패했습니다.'})
     }
@@ -73,14 +72,11 @@ router.delete('/:commentId', async(req, res) => {
         await Comments.destroy({ where: {
             id: commentId
         } })
-    
         res.send({ message: '댓글을 삭제하였습니다.'})
     }
     catch {
         res.status(400).send({ errorMessage: '댓글 삭제에 실패했습니다.' })
     }
 })
-
-
 
 module.exports = router

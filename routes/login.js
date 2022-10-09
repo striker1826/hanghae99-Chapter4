@@ -10,7 +10,6 @@ const authMiddleware = require("../middlewares/auth-middleware");
 
 router.post('/', async (req, res) => {
     const { nickname, password } = req.body;
-
     if (req.headers.authorization) {
         res.status(400).send({ errorMessage: "로그인이 이미 되어있습니다." })
         return
@@ -22,8 +21,7 @@ router.post('/', async (req, res) => {
                 password: password
             }
         })
-
-        const token = jwt.sign({ userId: user[0].userId }, 'hihihi');
+    const token = jwt.sign({ userId: user[0].userId }, 'hihihi');
         res.send({
             token
         })

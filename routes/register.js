@@ -7,7 +7,6 @@ const { Op } = require('sequelize');
 router.post("/", async(req,res) => {
     if (req.headers.authorization) {
         res.status(400).send({errorMessage:"로그인이 이미 되어있습니다."})
-        
         return;
     }
     const { nickname, password, confirm } = req.body;
