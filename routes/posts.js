@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const { Post, sequelize } = require('../models')
-const { Op, and, INTEGER, Sequelize } = require('sequelize');
 const { likes } = require('../models')
 const authMiddleware = require('../middlewares/auth-middleware');
 
@@ -35,42 +34,51 @@ router.put('/:postId/like', authMiddleware, async (req, res) => {
     const { userId } = res.locals.user;
     const { postId } = req.params;
     let result = {};
+
     const is_liked = await likes.findOne({ where: { postId, user:userId } })
+
     if (is_liked) {
         result = {data: false}
         await likes.destroy({where: {postId:postId, user:userId}})
+        await Post.decrement({likes : 1}, {where: {id:postId}})
     }
     else {
         result = {data: true}
         await likes.create({ postId,  user:userId })
+        await Post.increment({likes : 1},{where: {id:postId}});
     }
     res.json(result)
 })
-
+  
 // 좋아요 게시글 조회
 router.get('/like', authMiddleware, async (req, res) => {
     const { userId } = res.locals.user;
+
     const [results, metadata] = await sequelize.query(
         "SELECT * FROM likes JOIN Posts ON likes.postId = Posts.id")
     const joinTable = results
-    console.log(joinTable)
+    
     const myLikePost = []
     joinTable.map((x) => {x.user == userId ? myLikePost.push({
         postId: x.postId, userId: x.user,
         nickname: x.nickname, title: x.title,
-        createdAt: x.createdAt, updateAt: x.updateAt 
+        createdAt: x.createdAt, updatedAt: x.updatedAt,
+        likes: x.likes
     }):
     false})
-    res.send(myLikePost)
+    let myLikeList = myLikePost.sort((a,b) => b.likes - a.likes)
+    res.json({myLikePost})
 }) 
 
 // 게시글 상세 조회
-router.get('/:postId', async (req, res) => {
+router.get('/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
     try {
         const { nickname } = res.locals.user
-        const post = await Post.findOne({ where: { id: postId, nickname: nickname } });
-        res.send(post)
+        console.log(postId)
+        console.log(nickname)
+        const post = await Post.findOne({ where: { id: postId } });
+        res.json({post})
     }
     catch (e) {
         res.status(400).send({ errorMessage: "게시글 상세 조회에 실패했습니다." })
