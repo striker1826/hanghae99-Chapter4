@@ -15,10 +15,8 @@ module.exports = (req, res, next) => {
         const { userId } = jwt.verify(tokenValue, "hihihi");
         Users.findByPk(userId).then((user) => {
         res.locals.user = user
-        console.log(res.locals.user)
         next();
         });
-        next()
     }  
     catch (e) {
         res.status(401).send({

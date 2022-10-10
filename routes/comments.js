@@ -7,8 +7,9 @@ const authMiddleware = require("../middlewares/auth-middleware");
 router.post('/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
     const { comment } = req.body;
+    const { nickname } = res.locals.user;
+    console.log(nickname);
     try {
-        const { nickname } = res.locals.user;
         await Comments.create({ postId, nickname, comment })
         res.send({ message: "댓글을 작성하였습니다." })
     } catch (err) {
@@ -20,8 +21,9 @@ router.post('/:postId', authMiddleware, async (req, res) => {
 router.get('/:postId', async (req, res) => {
     const { postId } = req.params;
     try {
-        const comment = await Comments.findAll({ where: {userId:postId} }).sort((a,b) => b.updatedAt - a.updatedAt)
-        res.send(comment)
+        const comment = await Comments.findAll({ where: {postId:postId} })
+        const commentSort = comment.sort((a,b) => b.updatedAt - a.updatedAt)
+        res.send(commentSort)
     }
     catch (e) {
         res.status(400).send({ errorMessage: "댓글 목록 조회에 실패했습니다." })
