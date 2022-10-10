@@ -9,7 +9,7 @@ router.post('/:postId', authMiddleware, async (req, res) => {
     const { comment } = req.body;
     try {
         const { nickname } = res.locals.user;
-        await Comments.create({ userId: postId, nickname, comment: comment })
+        await Comments.create({ postId, nickname, comment })
         res.send({ message: "댓글을 작성하였습니다." })
     } catch (err) {
         res.status(400).send({ errorMessage:"댓글 생성에 실패했습니다" })

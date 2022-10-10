@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER,
     },
-    userId: DataTypes.STRING,
+    postId: DataTypes.STRING,
     nickname: DataTypes.STRING,
     comment: DataTypes.STRING
   }, {

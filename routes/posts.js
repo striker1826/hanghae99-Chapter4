@@ -21,8 +21,9 @@ router.post('/', authMiddleware, async (req, res) => {
 // 게시글 전체 조회
 router.get('/', async (req, res) => {
     try {
-        const post = await Post.findAll().sort((a,b) => b.updatedAt - a.updatedAt)
-        res.json({ post: post})
+        const postAll = await Post.findAll()
+        const postAllSort = postAll.sort((a,b) => b.updatedAt - a.updatedAt)
+        res.json({ post: postAllSort})
     }
     catch (e) {
         res.status(400).send({ errorMessage: "게시글 전체 조회에 실패했습니다." })
